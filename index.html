@@ -15,7 +15,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
 
 		<link rel="stylesheet" href="css/reveal.css">
-		<link rel="stylesheet" href="css/theme/black.css" id="theme">
+		<link rel="stylesheet" href="css/theme/white.css" id="theme">
 
 		<!-- Code syntax highlighting -->
 		<link rel="stylesheet" href="lib/css/zenburn.css">
@@ -41,18 +41,19 @@
 			<!-- Any section element inside of this container is displayed as a slide -->
 			<div class="slides">
 				<section>
-					<h1>Docker and Ansible</h1>
+					<h2>Docker and Ansible</h2>
 					<h3>Daniel Kraic</h3>
 					<h4>2015-10-23</h4>
 					<p>
-						<small><a href="http://blog.dkraic.com">blog.dkraic.com</a> / <a href="http://github.com/danielkraic">github.com/danielkraic</a></small>
+						<small><a href="http://github.com/danielkraic" target="_blank">github.com/danielkraic</a></small>
+						<br>
+						<small><a href="http://blog.dkraic.com" target="_blank">blog.dkraic.com</a></small>
 					</p>
 				</section>
 
 				<section>
 					<section>
-				    <!--<h1>Ansible</h1>-->
-						<img src="http://www.ansible.com/hs-fs/hub/330046/file-769078185-png/Official_Logos/ansible_wordlogo_black_medium.png?t=1445360239370" alt="">
+				    <img src="http://www.ansible.com/hs-fs/hub/330046/file-769078185-png/Official_Logos/ansible_wordlogo_black_medium.png?t=1445360239370" alt="">
 						<p>Simple. Agentless. Powerful.</p>
 					</section>
 
@@ -81,7 +82,7 @@
 					</section>
 
 					<section>
-						 <h2 style='text-transform: lowercase;'>ansible host1 -m shell -a 'uname -a'</h2>
+						 <h3 style='text-transform: lowercase;'>ansible host1 -m shell -a 'uname -a'</h3>
 						 <small style='text-transform: lowercase;'>ansible -i inventory_file host_selection -m module -a params</small>
 					</section>
 
@@ -203,13 +204,16 @@ ansible-playbook playbook.yml --list-hosts
 						<a href="http://www.ansible.com/" target="_blank">ansible.com</a>
 						<br>
 						<a href="https://github.com/ansible/ansible" target="_blank">github.com/ansible/ansible</a>
+						<br>
+						<a href="http://blog.dkraic.com/post/ansible/">blog.dkraic.com/post/ansible</a>
 					</section>
 				</section>
 
 				<section>
 					<section>
-						<img style="background: white" src="https://muffinresearch.co.uk/content/images/2014/Aug/large_h-trans.png" alt="Docker" />
-						<h2>Build &rarr; ship &rarr; run</h2>
+						<!--<img style="background: white" src="https://muffinresearch.co.uk/content/images/2014/Aug/large_h-trans.png" alt="Docker" />-->
+						<img style="background: white" src="https://upload.wikimedia.org/wikipedia/commons/7/79/Docker_%28container_engine%29_logo.png" alt="Docker" />
+						<p>Build &rarr; Ship &rarr; Run</p>
 					</section>
 
 					<section>
@@ -248,7 +252,7 @@ ansible-playbook playbook.yml --list-hosts
 					</section>
 
 					<section>
-						<h2>Build &rarr; ship &rarr; run</h2>
+						<h2>Build &rarr; Ship &rarr; Run</h2>
 						<ul>
 							<li><strong>Build</strong> – build docker container application and all of its dependencies</li>
 							<li><strong>Ship</strong> – push container to public/private docker repository</li>
@@ -289,15 +293,15 @@ docker run docker/whalesay cowsay 'hello form docker'
 					</section>
 
 					<section>
-						<p>Run interactive</p>
+						<h3>Run interactive</h3>
 						<pre><code class="bash" data-trim>
 docker run -i -t --name my_debian debian:jessie /bin/bash
 						</code></pre>
 
-						<p>Run as deamon
+						<h3>Run as deamon</h3>
 						<pre><code class="bash" data-trim>
 docker run -d --name MySQL mysql:5.7 /opt/mysql/mysqld
-						</code></pre></p>
+						</code></pre>
 					</section>
 
 					<section>
@@ -313,16 +317,16 @@ docker run -d -P --name web nginx
 					</section>
 
 					<section>
-						<h2>Attach data</h2>
+						<h3>Attach data</h3>
 						<pre><code class="bash" data-trim>
 docker run --name web -p 80:80 -d \
 		-v /var/www:/usr/share/nginx/html:ro nginx
 						</code></pre>
-						<h2>Set ENV</h2>
+						<h3>Set ENV</h3>
 						<pre><code class="bash" data-trim>
 docker run -i -t -e VAR1=val1 -e VAR2=val2 debian:jessie bash
 						</code></pre>
-						<h2>Exec</h2>
+						<h3>Exec</h3>
 						<pre><code class="bash" data-trim>
 docker exec -i -t my_debian bash
 						</code></pre>
@@ -459,10 +463,19 @@ RUN ansible-playbook /etc/ansible/playbooks/server-install.yaml
 					</section>
 
 					<section>
-						<p><a href="https://docs.docker.com/" target="_blank">docs.docker.com</a></p>
-						<p><a href="https://hub.docker.com/" target="_blank">hub.docker.com</a></p>
+						<a href="https://docs.docker.com/" target="_blank">docs.docker.com</a>
+						<br>
+						<a href="https://hub.docker.com/" target="_blank">hub.docker.com</a>
+						<br>
+						<a href="http://blog.dkraic.com/post/docker/">blog.dkraic.com/post/docker</a>
 					</section>
 
+				</section>
+
+				<section>
+					<p>slides source:<br>
+						<a href="https://github.com/danielkraic/slides-docker-ansible">github.com/danielkraic/slides-docker-ansible</a>
+					</p>
 				</section>
 			</div>
 
@@ -481,7 +494,8 @@ RUN ansible-playbook /etc/ansible/playbooks/server-install.yaml
 				history: true,
 				center: true,
 
-				transition: 'slide', // none/fade/slide/convex/concave/zoom
+				//transition: 'slide', // none/fade/slide/convex/concave/zoom
+				transition: 'convex', // none/fade/slide/convex/concave/zoom
 
 				// Optional reveal.js plugins
 				dependencies: [
