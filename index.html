@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Docker and Ansible</title>
+
+		<meta name="description" content="Presentation slides about Docker and Ansible">
+		<meta name="author" content="Daniel Kraic">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/black.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h1>Docker and Ansible</h1>
+					<h3>Daniel Kraic</h3>
+					<h4>2015-10-23</h4>
+					<p>
+						<small><a href="http://blog.dkraic.com">blog.dkraic.com</a> / <a href="http://github.com/danielkraic">github.com/danielkraic</a></small>
+					</p>
+				</section>
+
+				<section>
+					<section>
+				    <!--<h1>Ansible</h1>-->
+						<img src="http://www.ansible.com/hs-fs/hub/330046/file-769078185-png/Official_Logos/ansible_wordlogo_black_medium.png?t=1445360239370" alt="">
+						<p>Simple. Agentless. Powerful.</p>
+					</section>
+
+					<section>
+						<h2>Ansible</h2>
+						<ul>
+							<li>configuring and managing computers</li>
+							<li>multi-node software deployment</li>
+							<li>ad hoc task execution</li>
+							<li>configuration management</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>In fact, it’s parallel ssh<br>...but done in smart way</h2>
+					</section>
+
+					<section>
+						<ul>
+							<li>agentless</li>
+							<li>connect to nodes over SSH</li>
+							<li>written in Python</li>
+							<li><code>pip install ansible</code></li>
+							<li>requires Python (2.4 or later) to be installed on node</li>
+						</ul>
+					</section>
+
+					<section>
+						 <h2 style='text-transform: lowercase;'>ansible host1 -m shell -a 'uname -a'</h2>
+						 <small style='text-transform: lowercase;'>ansible -i inventory_file host_selection -m module -a params</small>
+					</section>
+
+					<section>
+						<h2>Inventory file</h2>
+<pre><code class="ini" data-trim>
+[webservers]
+www[01:50].example.com
+
+[databases]
+db-[a:f].example.com
+
+[targets]
+localhost ansible_connection=local
+host1.com ansible_connection=ssh ansible_ssh_user=<user1></user1>
+host2.com ansible_connection=ssh ansible_ssh_user=user2
+</code></pre>
+					</section>
+
+					<section>
+						<h2>Modules</h2>
+						<ul>
+						<li>command, shell, script</li>
+						<li>copy, fetch, replace, stat, ini_file, template</li>
+						<li>apt, apt_key, apt_repository, composer, bower, npm, pip, cpanm, maven</li>
+						<li>service, authorized_keys, sysctl, cron, user, group, hostname, lvg, lvol, modprobe, mount</li>
+						<li>haproxy, get_url, ...</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Examples</h2>
+					</section>
+
+					<section>
+						<pre><code class="bash" data-trim>
+# run custom command
+ansible h1 -a "echo hello"
+
+# run as sudo, other user, ask for sudo pass
+ansible h1 -a "uname" -u username --sudo [--ask-sudo-pass]
+
+# manage httpd service
+ansible h1 -m service -a "name=httpd state=started"
+
+# manage apt packages
+ansible h1 -m apt -a "name=foo update_cache=yes state=latest"
+
+# manage apt repository
+ansible h1 -m apt_repository -a "repo='ppa:nginx/stable'"
+						</code></pre>
+					</section>
+
+					<section>
+						<pre><code class="bash" data-trim>
+# create files
+ansible h1 -m file  -a "dest=/tmp/f1 mode=600 owner=usr1"
+
+# copy file
+ansible h1 -m copy  -a "src=/etc/hosts dest=/etc/hosts"
+
+# fetch file
+ansible h1 -m fetch -a "src=/tmp/somefile dest=/tmp/fetched"
+
+# manage ini file
+ansible h1 -m ini_file -a "dest=f.ini section=S option=V value=1"
+						</code></pre>
+					</section>
+
+					<section>
+						<h1>Playbook</h1>
+						<ul>
+							<li>group of task in yaml file</li>
+							<li>variables, handlers, includes, "host type conditions", roles</li>
+							<li>failed_when, ignore_errors, notify, delegate_to</li>
+							<li>reusable roles at <a href="https://galaxy.ansible.com/" target="_blank">galaxy.ansible.com</a></li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Example</h2>
+					</section>
+
+					<section>
+						<pre><code  class="bash" data-trim>
+# run playbook
+ansible-playbook playbook.yml
+
+# run playbook using a parallelism level of 10
+ansible-playbook playbook.yml -f 10
+
+# list hosts that will be afected
+ansible-playbook playbook.yml --list-hosts
+						</code></pre>
+					</section>
+
+					<section>
+<pre><code  class="yaml" data-trim>
+---
+- hosts: webservers
+  vars:
+    http_port: 80
+  tasks:
+  - name: ensure apache is at the latest version
+    yum: pkg=httpd state=latest
+  - name: write the apache config file
+    template: src=/srv/httpd.j2 dest=/etc/httpd.conf
+    notify:
+    - restart apache
+  - name: ensure apache is running (and enable it at boot)
+    service: name=httpd state=started enabled=yes
+  handlers:
+    - name: restart apache
+      service: name=httpd state=restarted
+</code></pre>
+					</section>
+
+					<section>
+						<a href="http://www.ansible.com/" target="_blank">ansible.com</a>
+						<br>
+						<a href="https://github.com/ansible/ansible" target="_blank">github.com/ansible/ansible</a>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<img style="background: white" src="https://muffinresearch.co.uk/content/images/2014/Aug/large_h-trans.png" alt="Docker" />
+						<h2>Build &rarr; ship &rarr; run</h2>
+					</section>
+
+					<section>
+						<h2>Docker</h2>
+						<ul>
+							<li>package app with all dependencies into a container</li>
+							<li>build once - run everywhere (developers)</li>
+							<li>configure once - run anything (sys admins)</li>
+							<li>run on any computer, any infrastructure and any cloud</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Docker container</h2>
+						<ul>
+							<li>application</li>
+							<li>runtime</li>
+							<li>libraries</li>
+							<li>system tools</li>
+							<li>complete filesystem</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Container vs VM</h2>
+						<img style="background: white" src="http://pointful.github.io/docker-intro/docker-img/containers-vs-vms.png" alt="" />
+					</section>
+
+					<section>
+						<h2>Docker container</h2>
+						<ul>
+							<li>share linux kernel with other containers</li>
+							<li>run as an isolated process in userspace on the host operating system</li>
+							<li>uses resource isolation features of the Linux kernel - cgroups and kernel namespaces</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Build &rarr; ship &rarr; run</h2>
+						<ul>
+							<li><strong>Build</strong> – build docker container application and all of its dependencies</li>
+							<li><strong>Ship</strong> – push container to public/private docker repository</li>
+							<li><strong>Run</strong> – pull container from repository a run it</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Examples</h2>
+					</section>
+
+					<section>
+						<h2>Create + Start</h2>
+						<pre><code class="bash" data-trim>
+docker create -i -t --name my_debian debian:jessie bash
+						</code></pre>
+						<ul>
+							<li><strong>-i</strong> interactive mode (keeps the STDIN open)</li>
+							<li><strong>-t</strong> allocates a pseudo-TTY</li>
+							<li><strong>–name</strong> name of the container (or generate hash string)</li>
+							<li><strong>debian:jessie</strong> image to be instantiated.</li>
+							<li><strong>bash</strong> command to run inside container</li>
+						</ul>
+						<pre><code class="bash" data-trim>
+docker start -a -i my_debian
+						</code></pre>
+						<ul>
+							<li><strong>-a</strong> attach to the pseudo-TTY</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Create + Start = Run</h2>
+						<pre><code class="bash" data-trim>
+docker run hello-world
+docker run docker/whalesay cowsay 'hello form docker'
+						</code></pre>
+					</section>
+
+					<section>
+						<p>Run interactive</p>
+						<pre><code class="bash" data-trim>
+docker run -i -t --name my_debian debian:jessie /bin/bash
+						</code></pre>
+
+						<p>Run as deamon
+						<pre><code class="bash" data-trim>
+docker run -d --name MySQL mysql:5.7 /opt/mysql/mysqld
+						</code></pre></p>
+					</section>
+
+					<section>
+						<h3>Expose ports</h3>
+						<pre><code class="bash" data-trim>
+docker run -d -p 8080:80 --name web nginx
+						</code></pre>
+
+						<p>Expose all container ports to host</p>
+						<pre><code class="bash" data-trim>
+docker run -d -P --name web nginx
+						</code></pre>
+					</section>
+
+					<section>
+						<h2>Attach data</h2>
+						<pre><code class="bash" data-trim>
+docker run --name web -p 80:80 -d \
+		-v /var/www:/usr/share/nginx/html:ro nginx
+						</code></pre>
+						<h2>Set ENV</h2>
+						<pre><code class="bash" data-trim>
+docker run -i -t -e VAR1=val1 -e VAR2=val2 debian:jessie bash
+						</code></pre>
+						<h2>Exec</h2>
+						<pre><code class="bash" data-trim>
+docker exec -i -t my_debian bash
+						</code></pre>
+					</section>
+
+					<section>
+						<h2>Demo: web server</h2>
+						<pre><code class="bash" data-trim>
+echo 'hello from docker' > index.html
+docker run -p 8080:80 \
+ -v `pwd`:/usr/share/nginx/html:ro -d nginx
+# go to http://localhost:8080
+						</code></pre>
+					</section>
+
+					<section>
+						<h2>Control container</h2>
+						<pre><code class="bash" data-trim>
+docker ps
+docker ps -a
+docker ps -a --filter 'exited=0'
+docker stop my_debian
+docker kill my_debian
+docker rm my_debian
+						</code></pre>
+					</section>
+
+					<section>
+						<h2>Control images</h2>
+						<pre><code class="bash" data-trim>
+docker search nginx
+docker pull nginx
+docker pull debian:squeeze
+docker pull 172.16.0.1/username/image_name[:tag]
+docker images
+docker rmi -f nginx
+						</code></pre>
+					</section>
+
+					<section>
+						<h2>Link containers</h2>
+						<pre><code class="bash" data-trim>
+docker run --name DB \
+		-e MYSQL_ROOT_PASSWORD=admin \
+		-e MYSQL_DATABASE=admin \
+		-d mysql:5.7
+docker run -p 8080:80 \
+		-e WORDPRESS_DB_PASSWORD=admin \
+		--name WP --link DB:mysql \
+		-d wordpress
+# go to http://localhost:8080
+						</code></pre>
+					</section>
+
+					<section>
+						<h2>Docker Compose</h2>
+						<p>tool for defining and running multi-container applications
+						<ul>
+							<li>define Dockerfile</li>
+							<li>define services in <code>docker-compose.yml</code></li>
+							<li>run <code>docker-compose up</code></li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Docker Hub</h2>
+						<p><a href="https://hub.docker.com/" target="_blank">hub.docker.com</a></p>
+					</section>
+
+					<section>
+						<h2>Dockerfile</h2>
+						<p>instructions to build docker images</p>
+						<pre><code class="bash" data-trim>
+docker build -t dkraic/myapp .
+						</code></pre>
+					</section>
+
+					<section>
+						<pre><code class="dockerfile" data-trim>
+FROM ubuntu:14.04
+
+# install ansible
+RUN apt-get update && apt-get install -y ansible
+
+# add localhost to ansible hosts
+RUN echo 'localhost ansible_connection=local' > /etc/ansible/hosts
+
+# get ansible playbooks
+COPY my-playbooks/ /etc/ansible/playbooks/
+
+# run ansible playbook
+RUN ansible-playbook /etc/ansible/playbooks/server-install.yaml
+							</code></pre>
+					</section>
+
+					<section>
+						<h2>Container lifecycle</h2>
+						<ul>
+							<li>docker create</li>
+							<li>docker run</li>
+							<li>docker stop</li>
+							<li>docker start</li>
+							<li>docker restart</li>
+							<li>docker rm</li>
+							<li>docker kill</li>
+							<li>docker attach</li>
+							<li>docker wait</li>
+						</ul>
+					</section>
+
+					<section>
+    				<h2>Container info</h2>
+						<ul>
+							<li>docker ps</li>
+							<li>docker logs</li>
+							<li>docker inspect</li>
+							<li>docker port</li>
+							<li>docker top</li>
+						</ul>
+					</section>
+
+					<section>
+    				<h2>Images</h2>
+						<ul>
+							<li>docker images</li>
+							<li>docker build</li>
+							<li>docker commit</li>
+							<li>docker rmi</li>
+							<li>docker login</li>
+							<li>docker search</li>
+							<li>docker pull</li>
+							<li>docker push</li>
+						</ul>
+					</section>
+
+					<section>
+						<p><a href="https://docs.docker.com/" target="_blank">docs.docker.com</a></p>
+						<p><a href="https://hub.docker.com/" target="_blank">hub.docker.com</a></p>
+					</section>
+
+				</section>
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
