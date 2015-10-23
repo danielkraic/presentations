@@ -3,7 +3,7 @@
 ## Requirements
 
 * Node
-* Grunt
+* Grunt (npm install -g grunt-cli)
 
 ## Get
 
